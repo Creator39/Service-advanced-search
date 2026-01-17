@@ -1,0 +1,38 @@
+# services/search/docker-compose.yml
+version: '3.8'
+
+services:
+  # Elasticsearch pour la recherche
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: search_elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    networks:
+      - search_network
+
+  # RabbitMQ pour la communication asynchrone
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: search_rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+    ports:
+      - "5672:5672"   # Port RabbitMQ
+      - "15672:15672" # Interface web admin
+    networks:
+      - search_network
+
+volumes:
+  es_data:
+
+networks:
+  search_network:
+    driver: bridge
