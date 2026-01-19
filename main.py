@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, Path
+from fastapi import FastAPI, Query, Path, Depends
 from pydantic import BaseModel, Field
 from typing import Annotated, Literal
 from datetime import datetime
@@ -11,7 +11,7 @@ class MusicEntry(BaseModel):
     created_at : datetime = Field(default_factory=datetime.now, description="date of creation")
 
 class MusicSearch(BaseModel):
-    title : str = Field(description="the search query", min_length=1, max_length=50)
+    title : str | None = Field(default=None, description="the search query", min_length=1, max_length=50)
     filter : Literal["Rock", "Pop", "Jazz", "Techno"] | None = None
     sorted_by : Literal["title", "created_at", "duration"] | None = None
     limit : int = Field(5, gt=0, le=10, description="limit of result")
@@ -39,6 +39,10 @@ async def search_music_es(params: MusicSearch):
                     "title": params.title
                 }
             })
+    else:
+            query["query"]["bool"]["must"].append({
+                "match_all": {}
+            })
     if params.filter:
             query["query"]["bool"]["filter"].append({
                 "term": {
@@ -63,6 +67,6 @@ async def search_music_es(params: MusicSearch):
     
 
 @app.get("/search/")
-async def search(params: Annotated[MusicSearch, Query()]):
+async def search(params: Annotated[MusicSearch, Depends()]):
     results = await search_music_es(params)
     return results
