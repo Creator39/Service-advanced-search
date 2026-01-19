@@ -1,6 +1,4 @@
 # services/search/docker-compose.yml
-version: '3.8'
-
 services:
   # Elasticsearch pour la recherche
   elasticsearch:
@@ -19,7 +17,7 @@ services:
 
   # RabbitMQ pour la communication asynchrone
   rabbitmq:
-    image: rabbitmq:3-management-alpine
+    image: rabbitmq:4-management-alpine
     container_name: search_rabbitmq
     environment:
       - RABBITMQ_DEFAULT_USER=admin
