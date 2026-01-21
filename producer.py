@@ -4,10 +4,10 @@ from datetime import datetime
 
 # Données factices (simule ce que l'utilisateur envoie à l'API)
 fake_music = {
-    "title": "Daft Punk - One More Time",
-    "artist": "Daft Punk",
-    "duration": 320,
-    "genre": "Techno",
+    "title": "Ariana Grande - Positions",
+    "artist": "Ariana Grande",
+    "duration": 173,
+    "genre": "Pop",
     "created_at": datetime.now().isoformat() # Important: convertir la date en texte
 }
 
@@ -18,11 +18,11 @@ def send_message():
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host='localhost', port=5672, credentials=credentials)
     )
-    queu_name = "music_data"
+    queue_name = "music_data"
     channel = connection.channel()
-    channel.queue_declare(queue=queu_name)
+    channel.queue_declare(queue=queue_name)
     channel.basic_publish(exchange='',
-                          routing_key=queu_name,
+                          routing_key=queue_name,
                           body=json.dumps(fake_music)
                           )
     connection.close()

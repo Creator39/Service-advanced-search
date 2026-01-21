@@ -2,7 +2,7 @@
 services:
   # Elasticsearch pour la recherche
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.2.1
     container_name: search_elasticsearch
     environment:
       - discovery.type=single-node
@@ -19,9 +19,11 @@ services:
   rabbitmq:
     image: rabbitmq:4-management-alpine
     container_name: search_rabbitmq
+    env_file:
+      - .env
     environment:
-      - RABBITMQ_DEFAULT_USER=admin
-      - RABBITMQ_DEFAULT_PASS=admin
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PAWD}
     ports:
       - "5672:5672"   # Port RabbitMQ
       - "15672:15672" # Interface web admin
